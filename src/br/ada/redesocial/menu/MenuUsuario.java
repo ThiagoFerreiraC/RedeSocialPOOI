@@ -1,32 +1,43 @@
 package br.ada.redesocial.menu;
 
+import br.ada.redesocial.exceptions.FieldIsBlankException;
+import br.ada.redesocial.exceptions.InvalidMenuOptionException;
+import br.ada.redesocial.perfil.Perfil;
+
 public class MenuUsuario extends Menu{
-
-    public MenuUsuario() {
-        super(new String[]{"Postar", "Timeline", "Sair"});
+    private Perfil usuario;
+    public MenuUsuario(Perfil usuario) {
+        super(
+                new OpcoesMenu[]{
+                        OpcoesMenu.POSTAR,
+                        OpcoesMenu.TIMELINE,
+                        OpcoesMenu.SAIR},
+                "Menu do Usuario");
+        this.usuario = usuario;
     }
-    @Override
-    public void getCabecalho() {
-        System.out.println("\n----MENU DO USUÁRIO ------");
-    }
 
-    @Override
-    public void determinarAcao(String opcao) {
-        switch (opcao) {
-            case "1":
-                postar();
-                executarMenu();
+    public void determinarAcao(int opcaoSelecionada) throws InvalidMenuOptionException {
+        switch (opcaoSelecionada) {
+            case 1:
+                try {
+                    formatarCabecalho("Tela de Postagem");
+                    usuario.postar();
+                } catch (FieldIsBlankException e) {
+                    System.out.println(e.getMessage());
+                }
+                redeSocial.iniciarMenuUsuario();
                 break;
-            case "2":
-                exibirTimeline();
-                executarMenu();
+            case 2:
+                usuario.visualizarTimeline();
+                redeSocial.iniciarMenuUsuario();
                 break;
-            case "3":
-                iniciarExecucaoPrograma();
+            case 3:
+                redeSocial.deslogarUsuario();
+                redeSocial.iniciarExecucaoPrograma();
                 break;
             default:
-                System.out.println("Opção inválida. Por favor, digite novamente!");
-                executarMenu();
+                throw new InvalidMenuOptionException();
         }
     }
+
 }

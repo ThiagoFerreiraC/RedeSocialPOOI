@@ -1,33 +1,49 @@
 package br.ada.redesocial.menu;
 
+import br.ada.redesocial.exceptions.*;
 public class MenuInicial extends Menu {
 
     public MenuInicial() {
-        super(new String[]{"Cadastrar-se", "Entrar", "Fechar"});
+        super(
+                new OpcoesMenu[]{
+                        OpcoesMenu.CADASTRAR,
+                        OpcoesMenu.ENTRAR,
+                        OpcoesMenu.FECHAR
+                },
+                "Seja bem-vindo(a) ao Exemplário!");
     }
 
-    @Override
-    public void getCabecalho() {
-        System.out.println("\nSeja bem-vindo(a) ao Exemplário!");
-    }
-
-    @Override
-    public void determinarAcao(String opcao) {
-        switch (opcao) {
-            case "1":
-                System.out.println("\n------------TELA DE CADASTRO---------");
-                adicionarUsuario();
+    public void determinarAcao(int opcaoSelecionada) throws InvalidMenuOptionException {
+        switch (opcaoSelecionada) {
+            case 1:
+                try {
+                    formatarCabecalho("Tela de Cadastro");
+                    redeSocial.cadastrarUsuario();
+                } catch (FieldIsBlankException e) {
+                    System.out.println(e.getMessage());
+                } catch (LoginInUseException e) {
+                    System.out.println(e.getMessage());
+                }
+                redeSocial.iniciarExecucaoPrograma();
                 break;
-            case "2":
-                System.out.println("\n------------TELA DE LOGIN---------");
-                fazerLogin();
+            case 2:
+                try {
+                    formatarCabecalho("Tela de Login");
+                    redeSocial.logarUsuario();
+                    redeSocial.iniciarMenuUsuario();
+                } catch (UserNotFoundException e) {
+                    System.out.println(e.getMessage());
+                    redeSocial.iniciarExecucaoPrograma();
+                } catch (InvalidPasswordException e) {
+                    System.out.println(e.getMessage());
+                    redeSocial.iniciarExecucaoPrograma();
+                }
                 break;
-            case "3":
+            case 3:
                 System.out.println("Esperamos te ver em breve!");
                 break;
             default:
-                System.out.println("Opção inválida!");
-                executarMenu();
+                throw new InvalidMenuOptionException();
         }
     }
 }

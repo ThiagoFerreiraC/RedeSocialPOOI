@@ -1,11 +1,10 @@
 package br.ada.redesocial.perfil;
 
-import br.ada.redesocial.exceptions.InvalidPasswordException;
+import br.ada.redesocial.exceptions.FieldIsBlankException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static br.ada.redesocial.RedeSocial.scan;
+import java.util.Scanner;
 
 public class Perfil {
     private final String nome;
@@ -27,35 +26,34 @@ public class Perfil {
         return nome;
     }
 
-    public void postar() {
-        System.out.println("\n----POSTAR");
+    public void postar() throws FieldIsBlankException {
+        Scanner scan = new Scanner(System.in);
         System.out.print("Digite o comentário: ");
         String comentario = scan.nextLine();
 
         if(comentario.isBlank()) {
-            System.out.println("Comentário não pode ser em branco");
-            postar();
+            throw new FieldIsBlankException();
         }
 
-        Post post = new Post(comentario);
-        this.adicionarPost(post);
+        posts.add( new Post(comentario));
         System.out.println("Post realizado com sucesso!");
     }
 
-    private void adicionarPost(Post post) {
-        this.posts.add(post);
-    }
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void isSenhaCorreta() throws InvalidPasswordException {
+    public boolean isSenhaCorreta() {
+        Scanner scan = new Scanner(System.in);
         System.out.print("Digite a senha: ");
         String senhaAConferir = scan.nextLine();
-
-        if (!senha.equals(senhaAConferir)) {
-            throw new InvalidPasswordException();
-        }
+        return senha.equals(senhaAConferir);
     }
 
+    public void visualizarTimeline() {
+        System.out.println("Sua Timeline, " + nome + ":");
+        if (posts.size() == 0) {
+            System.out.println("Você ainda não postou nada.");
+        } else {
+            for (Post post : posts) {
+                System.out.println(post.getData() + " às " + post.getHora() + " - " + post.getComentario());
+            }
+        }
+    }
 }
